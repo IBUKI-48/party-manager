@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Party Manager | Cool Modern Ultimate V106</title>
+    <title>Party Manager | Cool Modern Ultimate V108</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -75,7 +75,7 @@
 
         .calendar-legend { display: flex; gap: 20px; font-size: 0.7rem; color: var(--text-sub); margin-bottom: 8px; justify-content: flex-end; letter-spacing: 1px; font-weight: bold; flex-wrap: wrap; }
         .legend-item { display: flex; align-items: center; gap: 6px; }
-        .legend-box { display: inline-block; width: 10px; height: 10px; background-color: var(--color-healer); border: 1px solid var(--text-healer); border-radius: 2px; }
+        .legend-box { inline-block; width: 10px; height: 10px; background-color: var(--color-healer); border: 1px solid var(--text-healer); border-radius: 2px; }
 
         .week-section { max-width: 1600px; margin: 30px auto; padding: 0 40px; box-sizing: border-box; }
         .week-title { font-size: 1.3rem; font-weight: 700; letter-spacing: 3px; color: var(--text-main); margin-bottom: 15px; border-left: 5px solid var(--accent-dark); padding-left: 12px; text-transform: uppercase; font-family: 'Montserrat', sans-serif; }
@@ -175,7 +175,6 @@
     </style>
 
     <script>
-        // 変更：【ローカル実行完全遮断回路】スクリプトの最頭部に配置し、通信の前に物理的にアプリを自爆ストップさせる数式
         if (window.location.protocol === 'file:') {
             alert("ローカルファイルからのアクセスはセキュリティにより禁止されています。GitHub PagesのURLからアクセスしてください。");
             window.stop();
@@ -335,40 +334,28 @@
                 if (maxStr.includes('strict')) {
                     const totalParties = maxNum / 4;
                     for (let p = 0; p < totalParties; p++) {
-                        for (let s = 0; s < 3; s++) slots.push({ roleType: "attacker", label: `アタッカー枠`, name: "", job: "", accountId: "" });
-                        slots.push({ roleType: "healer", label: `ヒーラー枠 (僧侶/賢者/デス/隠者/旅芸人)`, name: "", job: "", accountId: "" });
+                        // 変更：内部オブジェクト構造へ、一意の識別子用の「charId」プロパティを最初から正式定義
+                        for (let s = 0; s < 3; s++) slots.push({ roleType: "attacker", label: `アタッカー枠`, name: "", job: "", accountId: "", charId: "" });
+                        slots.push({ roleType: "healer", label: `ヒーラー枠 (僧侶/賢者/デス/隠者/旅芸人)`, name: "", job: "", accountId: "", charId: "" });
                     }
                 } else {
-                    for (let i = 0; i < maxNum; i++) slots.push({ roleType: "free", label: `SLOT ${i+1}`, name: "", job: "", accountId: "" });
+                    for (let i = 0; i < maxNum; i++) slots.push({ roleType: "free", label: `SLOT ${i+1}`, name: "", job: "", accountId: "", charId: "" });
                 }
             } else {
                 if (maxStr === '4_strict_v' || maxStr === '4_strict_nv') {
-                    slots.push({ roleType: "tank", label: "TANK枠", name: "", job: "", accountId: "" });
-                    slots.push({ roleType: "healer", label: "HEALER枠", name: "", job: "", accountId: "" });
-                    slots.push({ roleType: "dps", label: "DPS枠", name: "", job: "", accountId: "" });
-                    slots.push({ roleType: "dps", label: "DPS枠", name: "", job: "", accountId: "" });
+                    for(let i=0;i<4;i++) slots.push({ roleType: i===0?"tank":i===1?"healer":"dps", label: i===0?"TANK枠":i===1?"HEALER枠":"DPS枠", name: "", job: "", accountId: "", charId: "" });
                 } else if (maxStr === '8_strict') {
-                    slots.push({ roleType: "tank", label: "MT枠", name: "", job: "", accountId: "" });
-                    slots.push({ roleType: "tank", label: "ST枠", name: "", job: "", accountId: "" });
-                    slots.push({ roleType: "pure", label: "H1 (ピュアヒーラー)枠", name: "", job: "", accountId: "" });
-                    slots.push({ roleType: "barrier", label: "H2 (バリアヒーラー)枠", name: "", job: "", accountId: "" });
-                    slots.push({ roleType: "melee", label: "D-1 (近接DPS)枠", name: "", job: "", accountId: "" });
-                    slots.push({ roleType: "melee", label: "D-2 (近接DPS)枠", name: "", job: "", accountId: "" });
-                    slots.push({ roleType: "ranged", label: "D-3 (遠隔DPS)枠", name: "", job: "", accountId: "" });
-                    slots.push({ roleType: "ranged", label: "D-4 (遠隔DPS)枠", name: "", job: "", accountId: "" });
+                    let labels = ["MT枠", "ST枠", "H1 (ピュアヒーラー)枠", "H2 (バリアヒーラー)枠", "D-1 (近接DPS)枠", "D-2 (近接DPS)枠", "D-3 (遠隔DPS)枠", "D-4 (遠隔DPS)枠"];
+                    let roles = ["tank", "tank", "pure", "barrier", "melee", "melee", "ranged", "ranged"];
+                    for(let i=0;i<8;i++) slots.push({ roleType: roles[i], label: labels[i], name: "", job: "", accountId: "", charId: "" });
                 } else if (maxStr === '24_strict') {
                     ["A", "B", "C"].forEach(letter => {
-                        slots.push({ roleType: "tank", label: `TANK枠`, name: "", job: "", accountId: "" });
-                        slots.push({ roleType: "pure", label: `H1 (ピュア)枠`, name: "", job: "", accountId: "" });
-                        slots.push({ roleType: "barrier", label: `H2 (バリア)枠`, name: "", job: "", accountId: "" });
-                        slots.push({ roleType: "melee", label: `D-1 (近接)枠`, name: "", job: "", accountId: "" });
-                        slots.push({ roleType: "melee", label: `D-2 (近接)枠`, name: "", job: "", accountId: "" });
-                        slots.push({ roleType: "ranged", label: `D-3 (遠隔)枠`, name: "", job: "", accountId: "" });
-                        slots.push({ roleType: "ranged", label: `D-4 (遠隔)枠`, name: "", job: "", accountId: "" });
-                        slots.push({ roleType: "free_dps", label: `D-5 (フリーDPS)枠`, name: "", job: "", accountId: "" });
+                        let labels = ["TANK枠", "H1 (ピュア)枠", "H2 (バリア)枠", "D-1 (近接)枠", "D-2 (近接)枠", "D-3 (遠隔)枠", "D-4 (遠隔)枠", "D-5 (フリーDPS)枠"];
+                        let roles = ["tank", "pure", "barrier", "melee", "melee", "ranged", "ranged", "free_dps"];
+                        for(let i=0;i<8;i++) slots.push({ roleType: roles[i], label: labels[i], name: "", job: "", accountId: "", charId: "" });
                     });
                 } else {
-                    for (let i = 0; i < maxNum; i++) slots.push({ roleType: "free", label: `SLOT ${i+1}`, name: "", job: "", accountId: "" });
+                    for (let i = 0; i < maxNum; i++) slots.push({ roleType: "free", label: `SLOT ${i+1}`, name: "", job: "", accountId: "", charId: "" });
                 }
             }
             return slots;
@@ -429,6 +416,8 @@
             const id = document.getElementById('loginId').value.trim();
             if (document.getElementById('loginPass').value !== MASTER_PASS) return alert("パスワードが違います");
             if (!id) return alert("IDを入力してください");
+            
+            localStorage.setItem('rememberedId', id);
             localStorage.setItem('accountId', id);
             localStorage.setItem('isAdmin', (document.getElementById('adminKey').value === ADMIN_SECRET) ? "true" : "false");
             initApp();
@@ -469,15 +458,27 @@
             let id = localStorage.getItem('accountId');
             let name = currentMode === 'DQX' ? (localStorage.getItem('dqxName') || id) : (localStorage.getItem('ff14Name') || id);
             
+            // 変更：一意の識別子としての固有ID（マイコードなど）をローカルストレージから抽出
+            let charId = currentMode === 'DQX' ? (localStorage.getItem('dqxCharId') || "") : (localStorage.getItem('ff14CharId') || "");
+
             const party = dataStore[currentMode][originIdx];
             const slot = party.slots[slotIdx];
 
             if (isAdmin) {
                 const proxyName = prompt("登録する参加者の名前を入力してください:", name);
                 if (!proxyName) return;
-                name = proxyName; id = "admin-proxy-" + Date.now();
+                const proxyCharId = prompt("登録する参加者のキャラクターID(マイコード)を入力してください(空白可):", "");
+                name = proxyName; charId = proxyCharId || "ADMIN-ASSIGNED"; id = "admin-proxy-" + Date.now();
             } else {
                 if (party.slots.some(s => s.accountId === id)) return alert("既に参加済みです");
+                
+                // 変更：【真の重複参加防御回路】名前ではなく「固有キャラクターID」の一致を走査して弾くロジックへアップグレード
+                if (charId && charId.trim() !== "") {
+                    const isCharIdDuplicated = party.slots.some(s => s.charId === charId);
+                    if (isCharIdDuplicated) {
+                        return alert(`エラー：すでにあなたの固有ID「#${charId}」はこの募集カード内に登録されています。同一人物の重複登録はできません。`);
+                    }
+                }
             }
 
             let job = "";
@@ -497,33 +498,25 @@
                     const groupSize = 8;
                     const currentGroupIndex = Math.floor(slotIdx / groupSize);
                     const allianceLetter = ["A", "B", "C"][currentGroupIndex];
-                    
                     const startIdx = currentGroupIndex * groupSize;
                     const endIdx = startIdx + groupSize;
-                    
                     let isJobTakenInAlliance = false;
                     for (let i = startIdx; i < endIdx; i++) {
-                        if (i !== slotIdx && party.slots[i] && party.slots[i].job === job) {
-                            isJobTakenInAlliance = true; break;
-                        }
+                        if (i !== slotIdx && party.slots[i] && party.slots[i].job === job) { isJobTakenInAlliance = true; break; }
                     }
                     if (isJobTakenInAlliance) return alert(`アライアンス ${allianceLetter} 内で同一ジョブが既に選択されています`);
                 }
             }
 
-            slot.accountId = id; slot.name = name; slot.job = job; saveData();
+            slot.accountId = id; slot.name = name; slot.job = job; slot.charId = charId; saveData();
         };
 
         window.leaveSlot = function(originIdx, slotIdx) {
             const party = dataStore[currentMode][originIdx];
             party.slots[slotIdx].accountId = ""; 
             party.slots[slotIdx].name = ""; 
-            
-            if (party.type === 'reserved') {
-                // 予約形式時は職業枠を維持
-            } else {
-                party.slots[slotIdx].job = "";
-            }
+            party.slots[slotIdx].charId = ""; // 変更：解放時に識別IDもクリア
+            if (party.type !== 'reserved') party.slots[slotIdx].job = "";
             saveData();
         };
 
@@ -548,19 +541,25 @@
                     typeSelect.options[1].text = "固定予約形式（管理者ジョブ設定型）";
                 }
             }
-
             document.getElementById('newCardMaxDQX').style.display = mode === 'DQX' ? 'block' : 'none';
             document.getElementById('newCardMaxFFXIV').style.display = mode === 'FFXIV' ? 'block' : 'none';
-            
             window.updateMaxSelectOptions(); render();
         };
 
         window.editProfile = function() {
             const id = localStorage.getItem('accountId');
             const nDqx = prompt("DQXの名前設定:", localStorage.getItem('dqxName') || id);
+            // 変更：名前設定の直後に、同名プレイヤーと完全に区別を定義するための固有ID(マイコード等)の入力プロンプトを追加新設
+            const idDqx = prompt("DQXのキャラクターID(マイコード：例: AA111-111)設定:", localStorage.getItem('dqxCharId') || "");
+            
             const nFf = prompt("FFXIVの名前設定:", localStorage.getItem('ff14Name') || id);
-            if (nDqx !== null && nFf !== null) {
-                localStorage.setItem('dqxName', nDqx || id); localStorage.setItem('ff14Name', nFf || id);
+            const idFf = prompt("FFXIVのサーバー名や固有識別用ID設定(任意):", localStorage.getItem('ff14CharId') || "");
+            
+            if (nDqx !== null && idDqx !== null && nFf !== null && idFf !== null) {
+                localStorage.setItem('dqxName', nDqx || id);
+                localStorage.setItem('dqxCharId', idDqx.trim());
+                localStorage.setItem('ff14Name', nFf || id);
+                localStorage.setItem('ff14CharId', idFf.trim());
                 render();
             }
         };
@@ -581,42 +580,10 @@
         function generateJobOptionsHTML(mode, roleType, allowSpecial, currentPartySlots, targetJob) {
             let html = `<option value="">--職業選択--</option>`;
             if (mode === 'DQX') {
-                let tankGroup = `<optgroup label="戦士・パラ・ガデ・魔剣士">
-                    <option value="戦士" class="opt-tank" ${targetJob==='戦士'?'selected':''}>戦士</option>
-                    <option value="パラディン" class="opt-tank" ${targetJob==='パラディン'?'selected':''}>パラディン</option>
-                    <option value="ガーディアン" class="opt-tank" ${targetJob==='ガーディアン'?'selected':''}>ガーディアン</option>
-                    <option value="魔剣士" class="opt-tank" ${targetJob==='魔剣士'?'selected':''}>魔剣士</option>
-                </optgroup>`;
-                
-                let healerGroup = `<optgroup label="僧侶・賢者・デス・隠者・旅芸人">
-                    <option value="僧侶" class="opt-healer" ${targetJob==='僧侶'?'selected':''}>僧侶</option>
-                    <option value="賢者" class="opt-healer" ${targetJob==='賢者'?'selected':''}>賢者</option>
-                    <option value="デスマスター" class="opt-healer" ${targetJob==='デスマスター'?'selected':''}>デスマスター</option>
-                    <option value="隠者" class="opt-healer" ${targetJob==='隠者'?'selected':''}>隠者</option>
-                    <option value="旅芸人" class="opt-other" ${targetJob==='旅芸人'?'selected':''}>旅芸人</option>
-                </optgroup>`;
-                
-                let otherGroup = `<optgroup label="その他補助グループ">
-                    <option value="盗賊" class="opt-other" ${targetJob==='盗賊'?'selected':''}>盗賊</option>
-                    <option value="レンジャー" class="opt-other" ${targetJob==='レンジャー'?'selected':''}>レンジャー</option>
-                    <option value="魔法戦士" class="opt-other" ${targetJob==='魔法戦士'?'selected':''}>魔法戦士</option>
-                    <option value="どうぐ使い" class="opt-other" ${targetJob==='どうぐ使い'?'selected':''}>どうぐ使い</option>
-                    <option value="スーパースター" class="opt-other" ${targetJob==='スーパースター'?'selected':''}>スーパースター</option>
-                    <option value="占い師" class="opt-other" ${targetJob==='占い師'?'selected':''}>占い師</option>
-                    <option value="天地雷鳴士" class="opt-other" ${targetJob==='天地雷鳴士'?'selected':''}>天地雷鳴士</option>
-                    ${allowSpecial ? `<option value="遊び人" class="opt-other" ${targetJob==='遊び人'?'selected':''}>遊び人</option>` : ''}
-                </optgroup>`;
-                
-                let dpsGroup = `<optgroup label="魔法・武闘・バト・まも・踊り・竜術・海賊">
-                    <option value="魔法使い" class="opt-dps" ${targetJob==='魔法使い'?'selected':''}>魔法使い</option>
-                    <option value="武闘家" class="opt-dps" ${targetJob==='武闘家'?'selected':''}>武闘家</option>
-                    <option value="バトルマスター" class="opt-dps" ${targetJob==='バトルマスター'?'selected':''}>バトルマスター</option>
-                    <option value="まもの使い" class="opt-dps" ${targetJob==='まもの使い'?'selected':''}>まもの使い</option>
-                    <option value="踊り子" class="opt-dps" ${targetJob==='踊り子'?'selected':''}>踊り子</option>
-                    <option value="竜術士" class="opt-dps" ${targetJob==='竜術士'?'selected':''}>竜術士</option>
-                    <option value="海賊" class="opt-dps" ${targetJob==='海賊'?'selected':''}>海賊</option>
-                </optgroup>`;
-
+                let tankGroup = `<optgroup label="戦士・パラ・ガデ・魔剣士"><option value="戦士" class="opt-tank" ${targetJob==='戦士'?'selected':''}>戦士</option><option value="パラディン" class="opt-tank" ${targetJob==='パラディン'?'selected':''}>パラディン</option><option value="ガーディアン" class="opt-tank" ${targetJob==='ガーディアン'?'selected':''}>ガーディアン</option><option value="魔剣士" class="opt-tank" ${targetJob==='魔剣士'?'selected':''}>魔剣士</option></optgroup>`;
+                let healerGroup = `<optgroup label="僧侶・賢者・デス・隠者・旅芸人"><option value="僧侶" class="opt-healer" ${targetJob==='僧侶'?'selected':''}>僧侶</option><option value="賢者" class="opt-healer" ${targetJob==='賢者'?'selected':''}>賢者</option><option value="デスマスター" class="opt-healer" ${targetJob==='デスマスター'?'selected':''}>デスマスター</option><option value="隠者" class="opt-healer" ${targetJob==='隠者'?'selected':''}>隠者</option><option value="旅芸人" class="opt-other" ${targetJob==='旅芸人'?'selected':''}>旅芸人</option></optgroup>`;
+                let otherGroup = `<optgroup label="その他補助グループ"><option value="盗賊" class="opt-other" ${targetJob==='盗賊'?'selected':''}>盗賊</option><option value="レンジャー" class="opt-other" ${targetJob==='レンジャー'?'selected':''}>レンジャー</option><option value="魔法戦士" class="opt-other" ${targetJob==='魔法戦士'?'selected':''}>魔法戦士</option><option value="どうぐ使い" class="opt-other" ${targetJob==='どうぐ使い'?'selected':''}>どうぐ使い</option><option value="スーパースター" class="opt-other" ${targetJob==='スーパースター'?'selected':''}>スーパースター</option><option value="占い師" class="opt-other" ${targetJob==='占い師'?'selected':''}>占い師</option><option value="天地雷鳴士" class="opt-other" ${targetJob==='天地雷鳴士'?'selected':''}>天地雷鳴士</option>${allowSpecial ? `<option value="遊び人" class="opt-other" ${targetJob==='遊び人'?'selected':''}>遊び人</option>` : ''}</optgroup>`;
+                let dpsGroup = `<optgroup label="魔法・武闘・バト・まも・踊り・竜術・海賊"><option value="魔法使い" class="opt-dps" ${targetJob==='魔法使い'?'selected':''}>魔法使い</option><option value="武闘家" class="opt-dps" ${targetJob==='武闘家'?'selected':''}>武闘家</option><option value="バトルマスター" class="opt-dps" ${targetJob==='バトルマスター'?'selected':''}>バトルマスター</option><option value="まもの使い" class="opt-dps" ${targetJob==='まもの使い'?'selected':''}>まもの使い</option><option value="踊り子" class="opt-dps" ${targetJob==='踊り子'?'selected':''}>踊り子</option><option value="竜術士" class="opt-dps" ${targetJob==='竜術士'?'selected':''}>竜術士</option><option value="海賊" class="opt-dps" ${targetJob==='海賊'?'selected':''}>海賊</option></optgroup>`;
                 if (roleType === 'attacker') return html + tankGroup + otherGroup + dpsGroup;
                 if (roleType === 'healer') return html + healerGroup;
                 return html + tankGroup + healerGroup + otherGroup + dpsGroup;
@@ -624,9 +591,7 @@
                 let tOpt = "", hOpt = "", dOpt = "";
                 Object.keys(ROLE_MAP.FFXIV).forEach(job => {
                     if (job === '青魔導士' && !allowSpecial) return;
-                    let r = ROLE_MAP.FFXIV[job]; let sub = SUB_ROLE_MAP[job] || r;
-                    let disabledStr = "";
-                    
+                    let r = ROLE_MAP.FFXIV[job]; let sub = SUB_ROLE_MAP[job] || r; let disabledStr = "";
                     if (roleType === 'tank' && r !== 'tank') disabledStr = "disabled";
                     if (roleType === 'healer' && r !== 'healer') disabledStr = "disabled";
                     if (roleType === 'pure' && sub !== 'pure') disabledStr = "disabled";
@@ -635,11 +600,8 @@
                     if (roleType === 'ranged' && sub !== 'ranged') disabledStr = "disabled";
                     if (roleType === 'free_dps' && r !== 'dps') disabledStr = "disabled";
                     if (roleType === 'dps' && r !== 'dps') disabledStr = "disabled";
-
                     let htmlOpt = `<option value="${job}" class="opt-${r}" ${targetJob===job?'selected':''} ${disabledStr}>${job}</option>`;
-                    if (r === 'tank') tOpt += htmlOpt;
-                    else if (r === 'healer') hOpt += htmlOpt;
-                    else dOpt += htmlOpt;
+                    if (r === 'tank') tOpt += htmlOpt; else if (r === 'healer') hOpt += htmlOpt; else dOpt += htmlOpt;
                 });
                 return html + `<optgroup label="TANK">${tOpt}</optgroup><optgroup label="HEALER">${hOpt}</optgroup><optgroup label="DPS">${dOpt}</optgroup>`;
             }
@@ -649,14 +611,17 @@
             const roleClass = (slot.job) ? (ROLE_MAP[currentMode][slot.job] || slot.roleType) : slot.roleType;
             const displayLabel = (party.type === 'reserved') ? '指定枠' : slot.label;
             
+            // 変更：名前の右側に、洗練されたデザインを損なわない薄いトーンで #キャラクターID を結合するHTML描画ロジック
+            const idBadgeHtml = (slot.charId && slot.charId !== "ADMIN-ASSIGNED") ? `<small style="opacity:0.5; font-size:0.7rem; margin-left:4px; font-weight:normal;">#${slot.charId}</small>` : '';
+
             let slotAction = "";
             if (slot.name) {
                 const showCancel = (slot.accountId === myId || isAdmin);
                 if (party.type === 'reserved') {
-                    slotAction = `<span><span class="job-badge">${slot.job}</span><b>${slot.name}</b></span>
+                    slotAction = `<span><span class="job-badge">${slot.job}</span><b>${slot.name}</b>${idBadgeHtml}</span>
                                   ${showCancel ? `<button class="cancel-btn" onclick="window.leaveSlot(${originIdx}, ${sIdx})">✕</button>` : ''}`;
                 } else {
-                    slotAction = `<span><b>${slot.name}</b> <small>[${slot.job}]</small></span>
+                    slotAction = `<span><b>${slot.name}</b>${idBadgeHtml} <small>[${slot.job}]</small></span>
                                   ${showCancel ? `<button class="cancel-btn" onclick="window.leaveSlot(${originIdx}, ${sIdx})">✕</button>` : ''}`;
                 }
             } else {
@@ -700,13 +665,9 @@
             document.querySelectorAll('.week-section').forEach(sec => {
                 const title = sec.querySelector('.week-title')?.innerText;
                 const container = sec.querySelector('.week-lane-container');
-                if (title && container) {
-                    laneScrollPositions[title] = container.scrollLeft;
-                }
+                if (title && container) { laneScrollPositions[title] = container.scrollLeft; }
             });
-            const savedScrollX = window.scrollX;
-            const savedScrollY = window.scrollY;
-
+            const savedScrollX = window.scrollX; const savedScrollY = window.scrollY;
             laneRoot.innerHTML = ""; calendarTimeline.innerHTML = "";
             if (!dataStore[currentMode]) dataStore[currentMode] = [];
 
@@ -734,19 +695,15 @@
                 mappedList.forEach(({ party, originIdx }) => {
                     if (party.time && party.time !== "未設定" && party.time.startsWith(dateStringKey)) {
                         if (!isAdmin && (!party.content || party.content === "未設定")) return;
-                        
                         const totalSlots = party.slots ? party.slots.length : 0;
                         const filledCount = party.slots ? party.slots.filter(s => s.name && s.name.trim() !== "").length : 0;
                         const isCardCompleted = totalSlots > 0 && filledCount >= totalSlots;
-
                         const isMyEntry = party.slots && party.slots.some(s => s.accountId === myId);
                         const starMark = isMyEntry ? "★ " : "";
-
                         const timeString = party.time.split('T')[1] || "";
                         const itemLink = document.createElement('a');
                         itemLink.className = 'calendar-item-link';
                         if (isCardCompleted) itemLink.classList.add('completed-item');
-
                         itemLink.onclick = () => window.jumpToCardBlock(originIdx);
                         itemLink.innerHTML = `
                             <div class="calendar-item-time">${timeString}</div>
@@ -760,7 +717,6 @@
             }
 
             const ONE_DAY_MS = 24 * 60 * 60 * 1000;
-            
             const weekLanesData = [
                 { title: "MY SCHEDULE", isMySchedule: true, cards: [] },
                 { title: "WEEK 1 (DAYS 1-7)", start: todayMidnight, end: todayMidnight + 7 * ONE_DAY_MS, cards: [] },
@@ -770,20 +726,12 @@
             ];
 
             mappedList.forEach(item => {
-                if (item.party.slots && item.party.slots.some(s => s.accountId === myId)) {
-                    weekLanesData[0].cards.push(item);
-                }
-
+                if (item.party.slots && item.party.slots.some(s => s.accountId === myId)) { weekLanesData[0].cards.push(item); }
                 const tStr = item.party.time;
-                if (!tStr || tStr === "未設定") {
-                    weekLanesData[1].cards.push(item);
-                } else {
-                    const tMs = new Date(tStr).getTime();
-                    let assigned = false;
+                if (!tStr || tStr === "未設定") { weekLanesData[1].cards.push(item); } else {
+                    const tMs = new Date(tStr).getTime(); let assigned = false;
                     for (let w = 1; w < weekLanesData.length; w++) {
-                        if (tMs >= weekLanesData[w].start && tMs < weekLanesData[w].end) {
-                            weekLanesData[w].cards.push(item); assigned = true; break;
-                        }
+                        if (tMs >= weekLanesData[w].start && tMs < weekLanesData[w].end) { weekLanesData[w].cards.push(item); assigned = true; break; }
                     }
                     if (!assigned) weekLanesData[4].cards.push(item);
                 }
@@ -793,16 +741,10 @@
                 if (!laneInfo.isMySchedule && !isAdmin && laneInfo.cards.length === 0) return;
                 if (laneInfo.isMySchedule && !isAdmin && laneInfo.cards.length === 0) return;
 
-                const weekSection = document.createElement('div');
-                weekSection.className = 'week-section';
-                
-                const titleDiv = document.createElement('div');
-                titleDiv.className = 'week-title';
-                titleDiv.innerText = laneInfo.title;
+                const weekSection = document.createElement('div'); weekSection.className = 'week-section';
+                const titleDiv = document.createElement('div'); titleDiv.className = 'week-title'; titleDiv.innerText = laneInfo.title;
                 weekSection.appendChild(titleDiv);
-
-                const laneContainer = document.createElement('div');
-                laneContainer.className = 'week-lane-container';
+                const laneContainer = document.createElement('div'); laneContainer.className = 'week-lane-container';
 
                 if (laneInfo.cards.length === 0 && isAdmin) {
                     const noScheduleText = laneInfo.isMySchedule ? "No registered schedules in your account." : "No recruitment schedules this week.";
@@ -817,26 +759,19 @@
                     const isContentEmpty = !party.content || party.content === "未設定" || party.content.trim() === "" ;
 
                     const card = document.createElement('div');
-                    
                     card.id = laneInfo.isMySchedule ? `mysched-block-${originIdx}` : `card-block-${originIdx}`;
                     card.className = 'party-card' + (party.type === 'reserved' ? ' special-card' : '') + (isCompleted ? ' completed-card' : '');
-                    
                     const badgeHtml = isCompleted ? `<span class="card-status-badge">COMPLETED</span>` : '';
                     
                     let fieldsHtml = "";
                     if (isAdmin) {
-                        const typeLabelText = currentMode === 'DQX' 
-                            ? (party.type === 'reserved' ? '指定予約形式カード（管理者職設定型）' : '通常募集形式カード（事前スロット可視化）')
-                            : (party.type === 'reserved' ? '固定予約形式カード（管理者ジョブ設定）' : '通常コンポ形式カード（事前ロール可視化）');
+                        const typeLabelText = currentMode === 'DQX' ? '指定予約形式カード（管理者職設定型）' : '固定予約形式カード（管理者ジョブ設定）';
                         fieldsHtml = `
                             <div class="input-group-admin">
-                                <label>コンテンツ名</label>
-                                <input type="text" value="${party.content}" onchange="window.updateField(${originIdx}, 'content', this.value)">
+                                <label>コンテンツ名</label><input type="text" value="${party.content}" onchange="window.updateField(${originIdx}, 'content', this.value)">
                                 <div class="admin-card-type-label">[ 募集タイプ: ${typeLabelText} ]</div>
-                                <label>開催日時 (15分単位自動ロック)</label>
-                                <input type="datetime-local" step="900" value="${party.time !== '未設定' ? party.time : ''}" onchange="window.updateField(${originIdx}, 'time', this.value)">
-                                <label>集合場所</label>
-                                <input type="text" value="${party.place}" onchange="window.updateField(${originIdx}, 'place', this.value)">
+                                <label>開催日時 (15分単位自動ロック)</label><input type="datetime-local" step="900" value="${party.time !== '未設定' ? party.time : ''}" onchange="window.updateField(${originIdx}, 'time', this.value)">
+                                <label>集合場所</label><input type="text" value="${party.place}" onchange="window.updateField(${originIdx}, 'place', this.value)">
                                 <label style="margin-top:8px;"><input type="checkbox" ${party.allowSpecial?'checked':''} onchange="window.updateField(${originIdx}, 'allowSpecial', this.checked)"> 特殊職を許可 (${currentMode==='DQX'?'遊び人':'青魔'})</label>
                             </div>
                         `;
@@ -859,69 +794,45 @@
                     }
 
                     let slotsHtml = `<div class="party-groups-wrapper" style="display:flex; gap:20px; flex-direction:row; align-items:flex-start; width:100%; box-sizing:border-box;">`;
-
                     if (groupSize > 0) {
                         const totalGroups = Math.ceil(party.slots.length / groupSize);
                         for (let g = 0; g < totalGroups; g++) {
                             let groupLabel = (currentMode === 'FFXIV') ? `ALLIANCE ${["A","B","C"][g]}` : `PARTY ${g+1}`;
-
-                            slotsHtml += `<div class="party-group-box" style="display:flex; flex-direction:column; flex:1; min-width:200px;">`;
-                            slotsHtml += `<div class="party-divider">${groupLabel}</div>`;
-
+                            slotsHtml += `<div class="party-group-box" style="display:flex; flex-direction:column; flex:1; min-width:200px;"><div class="party-divider">${groupLabel}</div>`;
                             for (let s = 0; s < groupSize; s++) {
-                                const sIdx = g * groupSize + s;
-                                const slot = party.slots[sIdx];
-                                if (slot) {
-                                    slotsHtml += renderSingleSlot(party, slot, originIdx, sIdx, isContentEmpty, myId, isAdmin);
-                                }
+                                const sIdx = g * groupSize + s; const slot = party.slots[sIdx];
+                                if (slot) { slotsHtml += renderSingleSlot(party, slot, originIdx, sIdx, isContentEmpty, myId, isAdmin); }
                             }
                             slotsHtml += `</div>`;
                         }
                     } else {
                         slotsHtml += `<div class="party-group-box" style="display:flex; flex-direction:column; width:100%;">`;
-                        party.slots.forEach((slot, sIdx) => {
-                            slotsHtml += renderSingleSlot(party, slot, originIdx, sIdx, isContentEmpty, myId, isAdmin);
-                        });
+                        party.slots.forEach((slot, sIdx) => { slotsHtml += renderSingleSlot(party, slot, originIdx, sIdx, isContentEmpty, myId, isAdmin); });
                         slotsHtml += `</div>`;
                     }
                     slotsHtml += `</div>`;
 
-                    card.innerHTML = `
-                        ${badgeHtml}
-                        ${fieldsHtml}
-                        ${slotsHtml}
-                        ${isAdmin ? `
-                            <div style="display:flex; gap:10px; margin-top:20px; width:100%;">
-                                <button onclick="window.resetCardClick(${originIdx})" style="flex:1; background:#e53e3e; color:#fff; border:none; padding:8px; font-weight:bold; cursor:pointer;">リセット</button>
-                                <button onclick="window.deleteCardClick(${originIdx})" style="background:#718096; color:#fff; border:none; padding:8px; font-weight:bold; cursor:pointer;">カード削除</button>
-                            </div>
-                        ` : ''}
-                    `;
+                    card.innerHTML = `${badgeHtml}${fieldsHtml}${slotsHtml}${isAdmin ? `<div style="display:flex; gap:10px; margin-top:20px; width:100%;"><button onclick="window.resetCardClick(${originIdx})" style="flex:1; background:#e53e3e; color:#fff; border:none; padding:8px; font-weight:bold; cursor:pointer;">リセット</button><button onclick="window.deleteCardClick(${originIdx})" style="background:#718096; color:#fff; border:none; padding:8px; font-weight:bold; cursor:pointer;">カード削除</button></div>` : ''}`;
                     laneContainer.appendChild(card);
                 });
-                weekSection.appendChild(laneContainer);
-                laneRoot.appendChild(weekSection);
+                weekSection.appendChild(laneContainer); laneRoot.appendChild(weekSection);
             });
 
             window.scrollTo(savedScrollX, savedScrollY);
             document.querySelectorAll('.week-section').forEach(sec => {
-                const title = sec.querySelector('.week-title')?.innerText;
-                const container = sec.querySelector('.week-lane-container');
-                if (title && container && laneScrollPositions[title] !== undefined) {
-                    container.scrollLeft = laneScrollPositions[title];
-                }
+                const title = sec.querySelector('.week-title')?.innerText; const container = sec.querySelector('.week-lane-container');
+                if (title && container && laneScrollPositions[title] !== undefined) { container.scrollLeft = laneScrollPositions[title]; }
             });
         }
 
-        window.handleLogin = handleLogin;
-        window.logout = logout;
-        window.switchMode = switchMode;
-        window.editProfile = editProfile;
-        window.createNewCardClick = createNewCardClick;
-        window.resetCardClick = resetCardClick;
-        window.deleteCardClick = deleteCardClick;
-        window.updateField = updateField;
-        window.updateMaxSelectOptions = updateMaxSelectOptions;
+        window.handleLogin = handleLogin; window.logout = logout; window.switchMode = switchMode; window.editProfile = editProfile;
+        window.createNewCardClick = createNewCardClick; window.resetCardClick = resetCardClick; window.deleteCardClick = deleteCardClick;
+        window.updateField = updateField; window.updateMaxSelectOptions = updateMaxSelectOptions;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const rem = localStorage.getItem('rememberedId');
+            if (rem) { const inputField = document.getElementById('loginId'); if (inputField) inputField.value = rem; }
+        });
 
         if (localStorage.getItem('accountId')) initApp();
     </script>
