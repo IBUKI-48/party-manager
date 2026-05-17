@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Party Manager | Cool Modern Ultimate V108</title>
+    <title>Party Manager | Cool Modern Ultimate V109</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -36,15 +36,27 @@
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg-main); z-index: 9999;
             display: flex; flex-direction: column; align-items: center;
-            padding-top: 10vh; box-sizing: border-box;
+            padding-top: 5vh; box-sizing: border-box; overflow-y: auto;
         }
+        /* 変更：スタイリッシュな喚起文を追加配置するため、全体の高さを自動に最適化 */
         .login-box {
             background: var(--card-bg); border: 1px solid var(--border-color);
-            padding: 40px; width: 340px; display: flex; flex-direction: column; gap: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.04); text-align: center;
+            padding: 40px; width: 420px; display: flex; flex-direction: column; gap: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.04); text-align: center; box-sizing: border-box;
         }
         .login-box input { width: 100%; padding: 10px; font-size: 0.85rem; background: var(--bg-main); color: var(--text-main); border: 1px solid var(--border-color); box-sizing: border-box; outline: none; }
         .login-box button { width: 100%; padding: 12px; background: var(--accent-dark); color: var(--bg-main); border: none; font-weight: bold; cursor: pointer; letter-spacing: 1px; }
+
+        /* 追加：デザインを損なわない洗練されたミニマルなログイン画面警告・喚起文スタイル */
+        .login-notice-container {
+            margin-top: 15px; padding-top: 20px; border-top: 1px dashed var(--border-color);
+            text-align: left; font-size: 0.75rem; line-height: 1.7; color: var(--text-sub);
+            letter-spacing: 0.5px; font-family: 'Noto Sans JP', sans-serif;
+        }
+        .login-notice-item { margin-bottom: 8px; position: relative; padding-left: 15px; }
+        .login-notice-item::before { content: '●'; position: absolute; left: 0; top: 0; color: var(--text-sub); }
+        .login-notice-item.alert-text::before { color: #ff7676; }
+        .login-notice-item strong { color: var(--text-main); font-weight: 700; }
 
         header { display: flex; justify-content: space-between; align-items: flex-end; padding: 40px 60px; border-bottom: 1px solid var(--border-color); background: var(--card-bg); position: relative; box-sizing: border-box; }
         .header-left h1 { font-size: 2rem; font-weight: 300; letter-spacing: 4px; margin: 0 0 10px 0; }
@@ -75,7 +87,7 @@
 
         .calendar-legend { display: flex; gap: 20px; font-size: 0.7rem; color: var(--text-sub); margin-bottom: 8px; justify-content: flex-end; letter-spacing: 1px; font-weight: bold; flex-wrap: wrap; }
         .legend-item { display: flex; align-items: center; gap: 6px; }
-        .legend-box { inline-block; width: 10px; height: 10px; background-color: var(--color-healer); border: 1px solid var(--text-healer); border-radius: 2px; }
+        .legend-box { display: inline-block; width: 10px; height: 10px; background-color: var(--color-healer); border: 1px solid var(--text-healer); border-radius: 2px; }
 
         .week-section { max-width: 1600px; margin: 30px auto; padding: 0 40px; box-sizing: border-box; }
         .week-title { font-size: 1.3rem; font-weight: 700; letter-spacing: 3px; color: var(--text-main); margin-bottom: 15px; border-left: 5px solid var(--accent-dark); padding-left: 12px; text-transform: uppercase; font-family: 'Montserrat', sans-serif; }
@@ -194,6 +206,13 @@
             <input type="password" id="loginPass" placeholder="PASSWORD (30408)">
             <input type="password" id="adminKey" placeholder="ADMIN SECRET KEY">
             <button onclick="window.handleLogin()">AUTHENTIFICATE</button>
+
+            <!-- 変更：ログイン画面に3つの重要ルールの喚起文をスマートに結合配置 -->
+            <div class="login-notice-container">
+                <div class="login-notice-item">アカウントIDには必ず<strong>ゲーム内のキャラクター名</strong>をご入力ください。</div>
+                <div class="login-notice-item">DQXは同名対策のため、<strong>キャラクターID（マイコード）</strong>で管理されます。</div>
+                <div class="login-notice-item alert-text" style="color: #ff7676;">開催6時間前に定員未達（空きあり）の募集は<strong>中止</strong>となります。</div>
+            </div>
         </div>
     </div>
 
@@ -245,7 +264,7 @@
             <div class="calendar-legend">
                 <div class="legend-item" style="color: var(--text-dps);"><span style="margin-right:2px;">⚠️</span><span>開催6時間前に集まらない場合は中止</span></div>
                 <div class="legend-item"><span>★：MY ENTRY</span></div>
-                <div class="legend-item"><span class="legend-box"></span><span>■：COMPLETED</span></div>
+                <div class="legend-item"><span class="legend-box"></span><span>：COMPLETED</span></div>
             </div>
             <div class="calendar-wrapper" id="topCalendarTimeline"></div>
         </div>
@@ -334,12 +353,11 @@
                 if (maxStr.includes('strict')) {
                     const totalParties = maxNum / 4;
                     for (let p = 0; p < totalParties; p++) {
-                        // 変更：内部オブジェクト構造へ、一意の識別子用の「charId」プロパティを最初から正式定義
                         for (let s = 0; s < 3; s++) slots.push({ roleType: "attacker", label: `アタッカー枠`, name: "", job: "", accountId: "", charId: "" });
                         slots.push({ roleType: "healer", label: `ヒーラー枠 (僧侶/賢者/デス/隠者/旅芸人)`, name: "", job: "", accountId: "", charId: "" });
                     }
                 } else {
-                    for (let i = 0; i < maxNum; i++) slots.push({ roleType: "free", label: `SLOT ${i+1}`, name: "", job: "", accountId: "", charId: "" });
+                    for (let i = 0; i < maxNum; i++) slots.push({ roleType: "free", label: `SLOT ${i+1}`, name: "", job: "", accountId: "" , charId: "" });
                 }
             } else {
                 if (maxStr === '4_strict_v' || maxStr === '4_strict_nv') {
@@ -457,8 +475,6 @@
             const isAdmin = localStorage.getItem('isAdmin') === "true";
             let id = localStorage.getItem('accountId');
             let name = currentMode === 'DQX' ? (localStorage.getItem('dqxName') || id) : (localStorage.getItem('ff14Name') || id);
-            
-            // 変更：一意の識別子としての固有ID（マイコードなど）をローカルストレージから抽出
             let charId = currentMode === 'DQX' ? (localStorage.getItem('dqxCharId') || "") : (localStorage.getItem('ff14CharId') || "");
 
             const party = dataStore[currentMode][originIdx];
@@ -471,8 +487,6 @@
                 name = proxyName; charId = proxyCharId || "ADMIN-ASSIGNED"; id = "admin-proxy-" + Date.now();
             } else {
                 if (party.slots.some(s => s.accountId === id)) return alert("既に参加済みです");
-                
-                // 変更：【真の重複参加防御回路】名前ではなく「固有キャラクターID」の一致を走査して弾くロジックへアップグレード
                 if (charId && charId.trim() !== "") {
                     const isCharIdDuplicated = party.slots.some(s => s.charId === charId);
                     if (isCharIdDuplicated) {
@@ -515,7 +529,7 @@
             const party = dataStore[currentMode][originIdx];
             party.slots[slotIdx].accountId = ""; 
             party.slots[slotIdx].name = ""; 
-            party.slots[slotIdx].charId = ""; // 変更：解放時に識別IDもクリア
+            party.slots[slotIdx].charId = "";
             if (party.type !== 'reserved') party.slots[slotIdx].job = "";
             saveData();
         };
@@ -548,17 +562,19 @@
 
         window.editProfile = function() {
             const id = localStorage.getItem('accountId');
-            const nDqx = prompt("DQXの名前設定:", localStorage.getItem('dqxName') || id);
-            // 変更：名前設定の直後に、同名プレイヤーと完全に区別を定義するための固有ID(マイコード等)の入力プロンプトを追加新設
-            const idDqx = prompt("DQXのキャラクターID(マイコード：例: AA111-111)設定:", localStorage.getItem('dqxCharId') || "");
             
-            const nFf = prompt("FFXIVの名前設定:", localStorage.getItem('ff14Name') || id);
-            const idFf = prompt("FFXIVのサーバー名や固有識別用ID設定(任意):", localStorage.getItem('ff14CharId') || "");
+            // 変更：片方しか遊んでいないプレイヤーが空欄のままOKしても、安全にスキップして進める親切な入力代入ロジック
+            const nDqx = prompt("【DQXプロフィール設定】\nゲーム内のキャラクター名を入力してください（DQXを遊んでいない場合は空欄のままOK）:", localStorage.getItem('dqxName') || "");
+            const idDqx = prompt("【DQXプロフィール設定】\nキャラクターID（マイコード：例: AA111-111）を入力してください（DQXを遊んでいない場合は空欄のままOK）:", localStorage.getItem('dqxCharId') || "");
+            
+            const nFf = prompt("【FFXIVプロフィール設定】\nゲーム内のキャラクター名を入力してください（FFXIVを遊んでいない場合は空欄のままOK）:", localStorage.getItem('ff14Name') || "");
+            const idFf = prompt("【FFXIVプロフィール設定】\nサーバー名や識別IDを入力してください（FFXIVを遊んでいない場合は空欄のままOK）:", localStorage.getItem('ff14CharId') || "");
             
             if (nDqx !== null && idDqx !== null && nFf !== null && idFf !== null) {
-                localStorage.setItem('dqxName', nDqx || id);
+                // 空欄のまま確定された場合は、アカウントID（ログインID）が安全名として補完されます
+                localStorage.setItem('dqxName', nDqx.trim() || id);
                 localStorage.setItem('dqxCharId', idDqx.trim());
-                localStorage.setItem('ff14Name', nFf || id);
+                localStorage.setItem('ff14Name', nFf.trim() || id);
                 localStorage.setItem('ff14CharId', idFf.trim());
                 render();
             }
@@ -574,6 +590,14 @@
                 document.getElementById('adminBadge').style.display = isAdmin ? "block" : "none";
                 document.getElementById('panelAdminOnly').style.display = isAdmin ? "flex" : "none";
                 window.switchMode(currentMode);
+
+                // 変更：【初回ログイン自動名前誘導】名前に初期データが存在しない場合、入室直後に自動で設定画面をポップアップ
+                const hasDqxName = localStorage.getItem('dqxName');
+                const hasFfName = localStorage.getItem('ff14Name');
+                if (!hasDqxName && !hasFfName) {
+                    alert("【初回案内】\nParty Managerへようこそ！\n最初にゲーム内での表示名（プロフィール）の設定を行ってください。");
+                    window.editProfile();
+                }
             }
         }
 
@@ -611,8 +635,8 @@
             const roleClass = (slot.job) ? (ROLE_MAP[currentMode][slot.job] || slot.roleType) : slot.roleType;
             const displayLabel = (party.type === 'reserved') ? '指定枠' : slot.label;
             
-            // 変更：名前の右側に、洗練されたデザインを損なわない薄いトーンで #キャラクターID を結合するHTML描画ロジック
-            const idBadgeHtml = (slot.charId && slot.charId !== "ADMIN-ASSIGNED") ? `<small style="opacity:0.5; font-size:0.7rem; margin-left:4px; font-weight:normal;">#${slot.charId}</small>` : '';
+            // 変更：【IDの配置変更】名前の横ではなく、名前の「真下」に回り込むよう <div> ブロックプロパティとして数式を再定義
+            const idBadgeHtml = (slot.charId && slot.charId !== "ADMIN-ASSIGNED") ? `<div style="opacity:0.5; font-size:0.65rem; margin-top:3px; font-weight:normal;">#${slot.charId}</div>` : '';
 
             let slotAction = "";
             if (slot.name) {
@@ -663,8 +687,7 @@
             
             const laneScrollPositions = {};
             document.querySelectorAll('.week-section').forEach(sec => {
-                const title = sec.querySelector('.week-title')?.innerText;
-                const container = sec.querySelector('.week-lane-container');
+                const title = sec.querySelector('.week-title')?.innerText; const container = sec.querySelector('.week-lane-container');
                 if (title && container) { laneScrollPositions[title] = container.scrollLeft; }
             });
             const savedScrollX = window.scrollX; const savedScrollY = window.scrollY;
